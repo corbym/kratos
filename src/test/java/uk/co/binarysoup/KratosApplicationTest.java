@@ -9,10 +9,12 @@ import uk.co.binarysoup.kratos.KratosAppConfiguration;
 import uk.co.binarysoup.kratos.KratosApplication;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -30,11 +32,15 @@ public class KratosApplicationTest {
     public void serverIsHealthy() {
         Client client = new JerseyClientBuilder(RULE.getEnvironment()).build("test client");
 
-        final Response request = client.target(
+        final Invocation.Builder invocationBuilder = client.target(
                 String.format("http://localhost:%d/healthcheck", RULE.getAdminPort()))
-                .request().get();
+                .request();
+
+        final Response request = invocationBuilder.get();
+        final String body = request.readEntity(String.class);
 
         assertThat(request.getStatus(), equalTo(200));
+        assertThat(body, containsString("\"kratos\":{\"healthy\":true}"));
     }
 
     private static String randomLocalServerPort() {
