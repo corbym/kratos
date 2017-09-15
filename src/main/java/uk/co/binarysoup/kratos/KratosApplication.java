@@ -1,5 +1,6 @@
 package uk.co.binarysoup.kratos;
 
+import com.codahale.metrics.health.HealthCheck;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,12 @@ public class KratosApplication extends Application<KratosAppConfiguration> {
 
     @Override
     public void run(final KratosAppConfiguration configuration, final Environment environment) throws Exception {
-        LOGGER.info("Application name: {}", configuration.getAppName());
+        environment.healthChecks().register("kratos", new HealthCheck() {
+            @Override
+            protected Result check() throws Exception {
+                return Result.healthy();
+            }
+        });
     }
 }
 

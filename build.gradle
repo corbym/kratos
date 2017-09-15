@@ -18,6 +18,8 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'io.dropwizard', name: 'dropwizard-testing', version: dropwizardVersion
+    testCompile group: 'io.dropwizard', name: 'dropwizard-client', version: dropwizardVersion
+    testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
 
     compile group: 'io.dropwizard', name: 'dropwizard-core', version: dropwizardVersion
 }
