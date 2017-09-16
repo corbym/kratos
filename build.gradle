@@ -1,18 +1,32 @@
 group 'uk.co.binarysoup'
 version '1.0-SNAPSHOT'
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:1.0.2'
+    }
+}
+
 apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'org.unbroken-dome.test-sets'
+
+repositories {
+    mavenCentral()
+}
 
 sourceCompatibility = 1.8
-
 
 project.ext {
     dropwizardVersion = '1.1.4'
     configPath = "$rootProject.projectDir/config/"
 }
 
-repositories {
-    mavenCentral()
+testSets {
+    acceptanceTest { dirName = 'acceptance-test' }
 }
 
 dependencies {
@@ -24,7 +38,20 @@ dependencies {
     compile group: 'io.dropwizard', name: 'dropwizard-core', version: dropwizardVersion
 }
 
-mainClassName = "saunders.finbar.SaundersApplication"
+project.acceptanceTest{
+    exclude '**/*Test.class'
+    include '**/AcceptanceTestSuite*'
+    outputs.upToDateWhen {false}
+}
+
+check.dependsOn acceptanceTest
+acceptanceTest.mustRunAfter test
+
+tasks.withType(Test) {
+    reports.html.destination = file("${reporting.baseDir}/${name}")
+}
+
+mainClassName = "uk.co.binarysoup.kratos.KratosApplication"
 
 run {
     args 'server', configPath + 'app_config.yml'
